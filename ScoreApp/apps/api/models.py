@@ -25,17 +25,20 @@ class Persona(models.Model):
 	def __repr__(self):
 		return self.__str__()
 
+	class Meta:
+		abstract = True
+		ordering = ['nombre']
+
+		
 class Profesor(Persona):
 
 	class Meta:
 		verbose_name_plural = 'Profesores'
-		ordering = ['nombre']
 	
 class Estudiante(Persona):
 
 	class Meta:
 		verbose_name_plural = 'Estudiantes'
-		ordering = ['nombre']
 	
 class Area(models.Model):
 	nombre = models.CharField("NOMBRE DEL AREA", max_length=10)
