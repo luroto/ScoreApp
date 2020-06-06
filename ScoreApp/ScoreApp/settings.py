@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 	'0.0.0.0',
 ]
 
+APPEND_SLASH=True
 
 # Application definition
 
