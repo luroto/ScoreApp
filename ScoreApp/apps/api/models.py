@@ -47,6 +47,8 @@ class Profesor(Persona):
         verbose_name_plural = 'Profesores'
     
 class Estudiante(Persona):
+    acudiente = models.CharField('APELLIDOS Y NOMBRES DEL ACUDIENTE', max_length=50, default='ACUDIENTE')
+    grado = models.IntegerField('Grado y grupo del estudiante')
 
     class Meta:
         verbose_name_plural = 'Estudiantes'

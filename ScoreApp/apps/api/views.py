@@ -13,7 +13,7 @@ fields = {'Profesor': persona, 'Estudiante': persona, 'Area': ['nombre', 'grado'
     'tipo', 'nombre', 'descripcion', 'area', 'grado', 'fecha'], 'Nota': ['estudiante', 'actividad', 'nota']}
 
 
-def data_validator(entity, body):
+def data_in_dictio(entity, body):
     dictio = {}
     for key, value in body.items():
         if key in fields[entity]:
@@ -36,7 +36,27 @@ def if_exists(entity, dictio):
     else:
         return False
 
-
+def required_keys(entidad, metodo, dictio):
+    ''' 
+    This function checks if the required keys for creating an entity are present:
+    '''
+    if metodo == 'POST':
+        for key in fields[entidad]:
+            if key not in dictio:
+                return False
+        return True
+    elif metodo == 'PUT':
+        if entidad == 'Profesor' or entidad == 'Estudiante 'and 'id' in dictio:
+            return True
+        elif entidad == 'Area' and 'nombre' in dictio and 'grado' in dictio:
+            return True
+        elif entidad == 'Actividad' and 'tipo' in dictio and 'nombre' in dictio and 'grado' in dictio:
+            return True
+        elif entidad == 'Nota' and 'estudiante' in dictio and 'actividad' in dictio:
+            return True
+        else:
+            return False
+    
 @csrf_exempt
 @require_http_methods(['GET', 'POST'])
 def get_all_elements(request):
@@ -50,19 +70,20 @@ def get_all_elements(request):
     elif request.method == 'POST':
         body = request.body.decode('utf-8')
         body = json.loads(body)
-        adding = data_validator(entidad, body)
+        # gets a dictio from the JSON dictionary
+        adding = data_in_dictio(entidad, body)
+        # Checks if the minimum requirements (dictionary keys)  are present
+        if required_keys(entidad, request.method, body) is False:
+            return JsonResponse({'error': 'In order to create this {} entity, you must provide he following fields in a JSON format {}'.format(entidad, fields[entidad])})	
         if if_exists(element, adding) == True:
             return JsonResponse({'error': 'This {} entity already exists'.format(entidad)}, status=409)
-        if len(adding) != 0:
-            try:
-                adding = entities[element](**adding)
-                adding.save()
-                respuesta = adding.to_dict()
-            except IntegrityError as e:
-                return JsonResponse({'error': '{}'.format(e)})	
-        else:
-            message = 'In order to create {} entity, you must provide data for the following fields : {}'.format(entidad, fields[entidad])
-            return JsonResponse({'message': message})
+        try:
+            creating = entities[element]()
+            creating.save()
+            respuesta = creating.to_dict()
+            return JsonResponse(respuesta)
+        except (IntegrityError, KeyError) as e:
+            return JsonResponse({'error': '{}'.format(e)})	
 
     return JsonResponse(respuesta, status=201)
 
@@ -90,13 +111,18 @@ def detailed_persona(request, documento):
     if request.method == 'PUT':
         body = request.body.decode('UTF-8')
         body = json.loads(body)
-        body = data_validator(nombre_entidad, body)
+        body = data_in_dictio(nombre_entidad, body)
+        print(en_detalle)
         for key, value in body.items():
             en_detalle.__setattr__(key, value) 
         en_detalle.save()
+        print(en_detalle)
         en_detalle = en_detalle.to_dict()
         return JsonResponse(en_detalle, status=204)
     if request.method == 'DELETE':
         en_detalle.delete()
         return HttpResponse(204)
-	
+
+@csrf_exempt
+def all_students_per_course(request, curso):
+    pass
