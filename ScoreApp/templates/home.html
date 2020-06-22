@@ -5,15 +5,23 @@
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 		<script src="../static/scripts"></script> 
 		<link rel="stylesheet" href="../static/styles/common.css">
+		<link rel="stylesheet" href="../static/styles/header.css">
+		<link rel="stylesheet" href="../static/styles/footer.css">
 	</head> 
 	<body>
-		<div>
-			<h1> ScoreApp: Home </h1>
-			<h2>Mis cursos: </h2>
-			<ul></ul>
-			<p> {{ message }} </p>
+		<header> ScoreApp: {{ page }}</header>
+		<div classname="main-container">
+			<section classname="main-blocks">
+				<div classname="central-block">
+					<h1> ScoreApp: {{ page }}
+					</h1>
+					<ul></ul>
+					<p> {{ message }} </p>
+				</div>
+				<div>
+				</div>
+			</section>
 		</div>
-		<div>
-		</div>
+		<footer> </footer>
 	</body>
 </html>
